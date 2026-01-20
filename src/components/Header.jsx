@@ -1,5 +1,7 @@
+// components/Header/Header.js
 import { AppBar, Button, Container, Toolbar } from "@mui/material";
 import pokedexLogo from "../assets/pokedex-logo.png";
+
 import './Header.css';
 
 export default function Header() {
@@ -9,12 +11,13 @@ export default function Header() {
         <AppBar position="static">
           <Toolbar>
             <div className="image-container">
-              <img src={pokedexLogo} alt="Pokedex Logo" height={100} />
+              <img src={pokedexLogo} alt="Pokédex Logo" height={100} />
             </div>
           </Toolbar>
           <Toolbar>
             <Button color="inherit" href="/">Inicio</Button>
             <Button color="inherit" href="/add-pokemon">Agregar Pokémon</Button>
+            <Button color="inherit" href="/login">Iniciar sesión</Button>
           </Toolbar>
         </AppBar>
       </Container>
