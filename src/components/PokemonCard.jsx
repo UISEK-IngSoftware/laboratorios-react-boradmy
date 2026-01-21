@@ -1,8 +1,11 @@
 import { Button, Card, CardActions, CardContent, CardMedia, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
-export default function PokemonCard({ pokemon }) {
+export default function PokemonCard({ pokemon, isLoggedIn, onDelete }) {
   const mediaUrl = import.meta.env.VITE_MEDIA_URL;
   pokemon.image = `${mediaUrl}/${pokemon.picture}`;
+  const navigate = useNavigate();
+
   return (
     <Card>
       <CardMedia
@@ -20,7 +23,22 @@ export default function PokemonCard({ pokemon }) {
         </Typography>
       </CardContent>
       <CardActions>
-        <Button size="small">Ver más</Button>
+        {/* Siempre visible */}
+        <Button size="small" onClick={() => navigate(`/pokemon/${pokemon.id}`)}>
+          Ver detalles
+        </Button>
+
+        {/* Solo si está logueado */}
+        {isLoggedIn && (
+          <>
+            <Button size="small" onClick={() => navigate(`/edit-pokemon/${pokemon.id}`)}>
+              Editar
+            </Button>
+            <Button size="small" color="error" onClick={() => onDelete(pokemon)}>
+              Eliminar
+            </Button>
+          </>
+        )}
       </CardActions>
     </Card>
   );

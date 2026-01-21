@@ -1,10 +1,79 @@
-/* src/components/Header.css */
-
-.pokedex-navbar {
-    margin-bottom: 2em;
+.image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 1em 0;
+}
+/* Botones de navegación alineados a la izquierda */
+.nav-buttons {
+  display: flex;
+  gap: 10px;
 }
 
-.image-container {
-    text-align: center;
-    width: 100%;
+/* Botones de login/logout alineados a la derecha */
+.auth-buttons {
+  margin-left: auto;
+  display: flex;
+  gap: 10px;
+}
+
+/* Estilo base para los NavLink */
+.nav-btn {
+  text-decoration: none;
+  padding: 8px 16px;
+  background-color: transparent;
+  color: white; /* ← esto asegura que el texto siempre se vea */
+  border: none;
+  font-weight: bold;
+}
+
+/* Estilo cuando el NavLink está activo */
+.nav-btn.active {
+  border-bottom: 2px solid yellow;
+  color: white; /* ← asegura que el texto siga visible */
+}
+
+/* Botón verde para iniciar sesión */
+.login-btn {
+  background-color: #4caf50;
+  color: white;
+  padding: 8px 16px;
+  text-decoration: none;
+  border: none;
+  font-weight: bold;
+}
+
+.login-btn:hover {
+  background-color: #45a049;
+  color: white;
+}
+
+/* Botón rojo para cerrar sesión */
+.logout-btn {
+  background-color: #f44336;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.logout-btn:hover {
+  background-color: #d32f2f;
+  color: white;
+}
+
+/* Botón azul para agregar Pokémon */
+.add-btn {
+  background-color: #1976d2;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  font-weight: bold;
+}
+
+.add-btn:hover {
+  background-color: #1565c0;
+  color: white;
 }

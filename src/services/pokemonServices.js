@@ -12,26 +12,19 @@ axios.interceptors.request.use((config) => {
 
 /**
  * Obtener la lista de pokemones
- * @returns
  */
 export async function fetchPokemons() {
   const response = await axios.get(`${API_BASE_URL}/pokemons`);
-  console.log(response);
   return response.data;
 }
 
 /**
  * Convertir un archivo a Base64
- * @param {} file
- * @returns
  */
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = () => {
-      // reader.result ya incluye el encabezado, lo usamos completo
-      resolve(reader.result);
-    };
+    reader.onload = () => resolve(reader.result);
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });
@@ -39,8 +32,6 @@ function fileToBase64(file) {
 
 /**
  * Crear un nuevo pokemon
- * @param {*} pokemonData
- * @returns
  */
 export async function addPokemon(pokemonData) {
   let pictureBase64 = "";
@@ -58,6 +49,42 @@ export async function addPokemon(pokemonData) {
   return response.data;
 }
 
+/**
+ * Obtener un pokemon por ID
+ */
+export async function fetchPokemonById(id) {
+  const response = await axios.get(`${API_BASE_URL}/pokemons/${id}/`);
+  return response.data;
+}
+
+/**
+ * Actualizar un pokemon existente
+ */
+export async function updatePokemon(id, pokemonData) {
+  let payload = { ...pokemonData };
+
+  if (pokemonData.picture) {
+    const pictureBase64 = await fileToBase64(pokemonData.picture);
+    payload.picture = pictureBase64;
+  } else {
+    delete payload.picture; // ← no envía el campo si no hay imagen nueva
+  }
+
+  const response = await axios.put(`${API_BASE_URL}/pokemons/${id}/`, payload);
+  return response.data;
+}
+
+/**
+ * Eliminar un pokemon
+ */
+export async function deletePokemon(id) {
+  const response = await axios.delete(`${API_BASE_URL}/pokemons/${id}/`);
+  return response.data;
+}
+
+/**
+ * Logout
+ */
 export async function logout() {
   const token = localStorage.getItem("access_token");
   if (!token) return;
