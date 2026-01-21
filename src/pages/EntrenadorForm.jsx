@@ -1,161 +1,122 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { TextField, Button, Typography, Grid } from "@mui/material";
-import { getEntrenadorById, createEntrenador, updateEntrenador } from "../services/trainerServices";
-import { fetchPokemons } from "../services/pokemonServices";
+import { TextField, Button, Card, CardContent, Typography } from "@mui/material";
+import { getEntrenadorById, updateEntrenador, createEntrenador } from "../services/trainerServices";
+import "./EntrenadorForm.css";
 
 export default function EntrenadorForm() {
-  const { id } = useParams(); // si existe, estamos editando
+  const { id } = useParams();
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
+  const [trainerData, setTrainerData] = useState({
     name: "",
     age: "",
     city: "",
     specialty: "",
     picture: null,
-    pokemons: [],
   });
-  const [pokemons, setPokemons] = useState([]);
 
   useEffect(() => {
-    async function fetchData() {
-      const allPokemons = await getPokemons();
-      setPokemons(allPokemons);
-
-      if (id) {
-        const entrenador = await getEntrenadorById(id);
-        setFormData({
-          name: entrenador.name,
-          age: entrenador.age,
-          city: entrenador.city || "",
-          specialty: entrenador.specialty || "",
-          picture: null, // imagen nueva si se sube
-          pokemons: entrenador.pokemons.map((p) => p.id),
+    if (id) {
+      getEntrenadorById(id)
+        .then((data) => {
+          setTrainerData({
+            name: data.name,
+            age: data.age,
+            city: data.city,
+            specialty: data.specialty,
+            picture: null, // la imagen se carga aparte
+          });
+        })
+        .catch((error) => {
+          console.error("Error cargando entrenador:", error);
+          alert("Error cargando entrenador");
         });
-      }
     }
-    fetchData();
   }, [id]);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     if (name === "picture") {
-      setFormData({ ...formData, picture: files[0] });
+      setTrainerData({ ...trainerData, picture: files[0] });
     } else {
-      setFormData({ ...formData, [name]: value });
+      setTrainerData({ ...trainerData, [name]: value });
     }
-  };
-
-  const handlePokemonSelect = (pokemonId) => {
-    setFormData((prev) => {
-      const alreadySelected = prev.pokemons.includes(pokemonId);
-      return {
-        ...prev,
-        pokemons: alreadySelected
-          ? prev.pokemons.filter((id) => id !== pokemonId)
-          : [...prev.pokemons, pokemonId],
-      };
-    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (id) {
-      await updateEntrenador(id, formData);
-      alert("Entrenador actualizado exitosamente");
-    } else {
-      await createEntrenador(formData);
-      alert("Entrenador creado exitosamente");
+    try {
+      if (id) {
+        await updateEntrenador(id, trainerData);
+        alert("Entrenador actualizado exitosamente");
+      } else {
+        await createEntrenador(trainerData);
+        alert("Entrenador agregado exitosamente");
+      }
+      navigate("/entrenadores");
+    } catch (error) {
+      console.error("Error guardando entrenador:", error);
+      alert("Error guardando entrenador");
     }
-    navigate("/entrenadores");
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <Typography variant="h4" gutterBottom>
-        {id ? "Editar Entrenador" : "Agregar Entrenador"}
-      </Typography>
-      <form onSubmit={handleSubmit}>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <TextField
-              label="Nombre"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              fullWidth
-              required
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              label="Edad"
-              name="age"
-              type="number"
-              value={formData.age}
-              onChange={handleChange}
-              fullWidth
-              required
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              label="Ciudad"
-              name="city"
-              value={formData.city}
-              onChange={handleChange}
-              fullWidth
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              label="Especialidad"
-              name="specialty"
-              value={formData.specialty}
-              onChange={handleChange}
-              fullWidth
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <input
-              type="file"
-              name="picture"
-              accept="image/*"
-              onChange={handleChange}
-            />
-          </Grid>
+    <Card className="form-card">
+      <CardContent>
+        <Typography variant="h5" gutterBottom>
+          {id ? "Editar Entrenador" : "Agregar Entrenador"}
+        </Typography>
+        <form onSubmit={handleSubmit} className="form-container">
+          <TextField
+            label="Nombre"
+            name="name"
+            value={trainerData.name}
+            onChange={handleChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Edad"
+            name="age"
+            type="number"
+            value={trainerData.age}
+            onChange={handleChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Ciudad"
+            name="city"
+            value={trainerData.city}
+            onChange={handleChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Especialidad"
+            name="specialty"
+            value={trainerData.specialty}
+            onChange={handleChange}
+            fullWidth
+            margin="normal"
+          />
 
-          <Grid item xs={12}>
-            <Typography variant="h6">Pokémons:</Typography>
-            {pokemons.map((p) => (
-              <div key={p.id}>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={formData.pokemons.includes(p.id)}
-                    onChange={() => handlePokemonSelect(p.id)}
-                  />
-                  {p.name}
-                </label>
-              </div>
-            ))}
-          </Grid>
+          <input type="file" name="picture" accept="image/*" onChange={handleChange} />
 
-          <Grid item xs={12}>
-            <Button type="submit" variant="contained" color="primary">
-              Guardar
+          <div className="form-actions">
+            <Button type="submit" variant="contained" color="success">
+              {id ? "Guardar cambios" : "Guardar"}
             </Button>
             <Button
-              variant="outlined"
-              color="secondary"
+              variant="contained"
+              color="error"
               onClick={() => navigate("/entrenadores")}
-              style={{ marginLeft: "10px" }}
             >
-              Volver
+              Cancelar
             </Button>
-          </Grid>
-        </Grid>
-      </form>
-    </div>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
   );
 }

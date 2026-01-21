@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Card, CardContent, CardMedia, Typography, Button } from "@mui/material";
-import { getEntrenadorById, deleteEntrenador } from "../services/trainerServices";
+import { Card, CardContent, Typography, Button } from "@mui/material";
+import { getEntrenadorById } from "../services/trainerServices";
+import "./EntrenadorDetail.css";
 
 export default function EntrenadorDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [entrenador, setEntrenador] = useState(null);
-  const mediaUrl = import.meta.env.VITE_MEDIA_URL;
-  const isLoggedIn = localStorage.getItem("access_token") !== null;
 
   useEffect(() => {
     async function fetchEntrenador() {
@@ -18,56 +17,27 @@ export default function EntrenadorDetail() {
     fetchEntrenador();
   }, [id]);
 
-  const handleDelete = async () => {
-    await deleteEntrenador(id);
-    alert("Entrenador eliminado exitosamente");
-    navigate("/entrenadores");
-  };
-
-  if (!entrenador) return <p>Cargando...</p>;
+  if (!entrenador) return <Typography>Cargando...</Typography>;
 
   return (
-    <Card sx={{ maxWidth: 500, margin: "20px auto" }}>
-      {entrenador.picture && (
-        <CardMedia
-          component="img"
-          height="300"
-          image={`${mediaUrl}/${entrenador.picture}`}
-          alt={entrenador.name}
-        />
-      )}
+    <Card className="detail-card">
       <CardContent>
         <Typography variant="h4">{entrenador.name}</Typography>
         <Typography variant="body1">Edad: {entrenador.age}</Typography>
-        {entrenador.city && <Typography variant="body1">Ciudad: {entrenador.city}</Typography>}
-        {entrenador.specialty && (
-          <Typography variant="body1">Especialidad: {entrenador.specialty}</Typography>
-        )}
+        <Typography variant="body1">Ciudad: {entrenador.city}</Typography>
+        <Typography variant="body1">Especialidad: {entrenador.specialty}</Typography>
 
-        <Typography variant="h6" sx={{ marginTop: 2 }}>Pokémons:</Typography>
-        {entrenador.pokemons && entrenador.pokemons.length > 0 ? (
-          <ul>
-            {entrenador.pokemons.map((p) => (
-              <li key={p.id}>{p.name} ({p.type})</li>
-            ))}
-          </ul>
-        ) : (
-          <Typography variant="body2" color="text.secondary">
-            Este entrenador no tiene pokémons asignados.
-          </Typography>
-        )}
+        <div className="detail-actions">
+        
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => navigate("/entrenadores")}
+          >
+            Volver
+          </Button>
+        </div>
       </CardContent>
-
-      {isLoggedIn && (
-        <CardContent>
-          <Button variant="contained" color="primary" onClick={() => navigate(`/edit-entrenador/${id}`)}>
-            Editar
-          </Button>
-          <Button variant="contained" color="error" onClick={handleDelete} sx={{ ml: 2 }}>
-            Eliminar
-          </Button>
-        </CardContent>
-      )}
     </Card>
   );
 }

@@ -1,47 +1,65 @@
 import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+// Interceptor global: añade el token automáticamente
+axios.interceptors.request.use((config) => {
+  const token = localStorage.getItem("access_token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// Helper para convertir archivo a Base64
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
 
 export async function getEntrenadores() {
-  const res = await axios.get(`${API_URL}/entrenadores/`);
+  const res = await axios.get(`${API_BASE_URL}/entrenadores/`);
   return res.data;
 }
 
 export async function getEntrenadorById(id) {
-  const res = await axios.get(`${API_URL}/entrenadores/${id}/`);
+  const res = await axios.get(`${API_BASE_URL}/entrenadores/${id}/`);
   return res.data;
 }
 
 export async function createEntrenador(data) {
-  const formData = new FormData();
-  formData.append("name", data.name);
-  formData.append("age", data.age);
-  formData.append("city", data.city);
-  formData.append("specialty", data.specialty);
-  if (data.picture) formData.append("picture", data.picture);
-  data.pokemons.forEach((p) => formData.append("pokemons", p));
+  let pictureBase64 = "";
+  if (data.picture) {
+    pictureBase64 = await fileToBase64(data.picture);
+  }
 
-  const res = await axios.post(`${API_URL}/entrenadores/`, formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+  const payload = {
+    ...data,
+    picture: pictureBase64,
+  };
+
+  const res = await axios.post(`${API_BASE_URL}/entrenadores/`, payload);
   return res.data;
 }
 
 export async function updateEntrenador(id, data) {
-  const formData = new FormData();
-  formData.append("name", data.name);
-  formData.append("age", data.age);
-  formData.append("city", data.city);
-  formData.append("specialty", data.specialty);
-  if (data.picture) formData.append("picture", data.picture);
-  data.pokemons.forEach((p) => formData.append("pokemons", p));
+  let payload = { ...data };
 
-  const res = await axios.put(`${API_URL}/entrenadores/${id}/`, formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+  if (data.picture) {
+    const pictureBase64 = await fileToBase64(data.picture);
+    payload.picture = pictureBase64;
+  } else {
+    delete payload.picture; // no envía campo si no hay imagen nueva
+  }
+
+  const res = await axios.put(`${API_BASE_URL}/entrenadores/${id}/`, payload);
   return res.data;
 }
 
 export async function deleteEntrenador(id) {
-  await axios.delete(`${API_URL}/entrenadores/${id}/`);
+  await axios.delete(`${API_BASE_URL}/entrenadores/${id}/`);
 }
