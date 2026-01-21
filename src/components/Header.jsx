@@ -19,20 +19,33 @@ export default function Header() {
     <header className="pokedex-navbar">
       <Container>
         <AppBar position="static">
+          {/* Logo centrado */}
           <Toolbar style={{ justifyContent: 'center' }}>
             <div className="image-container">
               <img src={pokedexLogo} alt="Pokédex Logo" height={100} />
             </div>
           </Toolbar>
-          <Toolbar>
+
+          {/* Barra de navegación */}
+          <Toolbar className="toolbar-nav">
             <div className="nav-buttons">
               <NavLink to="/" className="nav-btn">Inicio</NavLink>
+              <NavLink to="/pokemons" className="nav-btn">Pokémons</NavLink>
+              <NavLink to="/entrenadores" className="nav-btn">Entrenadores</NavLink>
+
               {isLoggedIn && (
-                <NavLink to="/add-pokemon" className="nav-btn add-btn">
-                  Agregar Pokémon
-                </NavLink>
+                <>
+                  <NavLink to="/add-pokemon" className="nav-btn add-btn">
+                    Agregar Pokémon
+                  </NavLink>
+                  <NavLink to="/add-entrenador" className="nav-btn add-btn">
+                    Agregar Entrenador
+                  </NavLink>
+                </>
               )}
             </div>
+
+            {/* Botones de login/logout */}
             <div className="auth-buttons">
               {isLoggedIn ? (
                 <button className="logout-btn" onClick={handleLogout}>
