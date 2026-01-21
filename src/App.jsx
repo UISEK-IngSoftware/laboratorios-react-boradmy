@@ -8,18 +8,16 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 function App() {
   return (
-    <>
-      <Header />
-      <Container>
-        <BrowserRouter>
-          <Routes>
-            <Route path='/' element={<PokemonList />} />
-            <Route path='/add-pokemon' element={<PokemonForm />} />
-            <Route path='/login' element={<LoginPage />} />
-          </Routes>
-        </BrowserRouter>
-      </Container>
-    </>
+    <Container>
+      <BrowserRouter>
+        <Header />
+        <Routes>
+          <Route path='/' element={<PokemonList />} />
+          <Route path='/add-pokemon' element={<PokemonForm />} />
+          <Route path='/login' element={<LoginPage />} />
+        </Routes>
+      </BrowserRouter>
+    </Container>
   );
 }
 

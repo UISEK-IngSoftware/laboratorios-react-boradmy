@@ -17,7 +17,7 @@ export default function LoginPage() {
     });
   };
 
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
   e.preventDefault();
   try {
     const responseData = await login(loginData.username, loginData.password);
