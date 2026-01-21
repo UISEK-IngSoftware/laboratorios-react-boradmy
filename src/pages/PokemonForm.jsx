@@ -1,7 +1,18 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Box, Button, TextField, Typography } from "@mui/material";
-import { addPokemon, fetchPokemonById, updatePokemon } from "../services/pokemonServices";
+import {
+  TextField,
+  Button,
+  Card,
+  CardContent,
+  Typography
+} from "@mui/material";
+import {
+  addPokemon,
+  fetchPokemonById,
+  updatePokemon
+} from "../services/pokemonServices";
+import "./PokemonForm.css";
 
 export default function PokemonForm() {
   const navigate = useNavigate();
@@ -47,15 +58,13 @@ export default function PokemonForm() {
     e.preventDefault();
     try {
       if (id) {
-        // Editar
         await updatePokemon(id, pokemonData);
         alert("Pokémon actualizado exitosamente");
       } else {
-        // Agregar
         await addPokemon(pokemonData);
         alert("Pokémon agregado exitosamente");
       }
-      navigate("/");
+      navigate("/pokemons");
     } catch (error) {
       console.error("Error guardando el Pokémon:", error);
       alert("Error guardando el Pokémon");
@@ -63,48 +72,68 @@ export default function PokemonForm() {
   };
 
   return (
-    <>
-      <Typography variant="h4" gutterBottom>
-        {id ? "Editar Pokémon" : "Agregar Pokémon"}
-      </Typography>
-      <Box
-        component="form"
-        onSubmit={handleSubmit}
-        sx={{ display: "flex", flexDirection: "column", gap: 2 }}
-      >
-        <TextField
-          label="Nombre"
-          name="name"
-          variant="outlined"
-          onChange={handleChange}
-          value={pokemonData.name}
-        />
-        <TextField
-          label="Tipo"
-          name="type"
-          variant="outlined"
-          onChange={handleChange}
-          value={pokemonData.type}
-        />
-        <TextField
-          label="Peso"
-          name="weight"
-          variant="outlined"
-          onChange={handleChange}
-          value={pokemonData.weight}
-        />
-        <TextField
-          label="Altura"
-          name="height"
-          variant="outlined"
-          onChange={handleChange}
-          value={pokemonData.height}
-        />
-        <input type="file" name="picture" onChange={handleChange} />
-        <Button variant="contained" type="submit">
-          {id ? "Actualizar" : "Guardar"}
-        </Button>
-      </Box>
-    </>
+    <Card className="form-card">
+      <CardContent>
+        <Typography variant="h5" gutterBottom>
+          {id ? "Editar Pokémon" : "Agregar Pokémon"}
+        </Typography>
+        <form onSubmit={handleSubmit} className="form-container">
+          <TextField
+            label="Nombre"
+            name="name"
+            value={pokemonData.name}
+            onChange={handleChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Tipo"
+            name="type"
+            value={pokemonData.type}
+            onChange={handleChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Peso"
+            name="weight"
+            value={pokemonData.weight}
+            onChange={handleChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Altura"
+            name="height"
+            value={pokemonData.height}
+            onChange={handleChange}
+            fullWidth
+            margin="normal"
+          />
+
+          {/* 👇 Campo de archivo */}
+          <input
+            type="file"
+            name="picture"
+            accept="image/*"
+            onChange={handleChange}
+            className="file-input"
+          />
+
+          <div className="form-actions">
+            <Button type="submit" variant="contained" color="success">
+              {id ? "Guardar cambios" : "Guardar"}
+            </Button>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={() => navigate("/pokemons")}
+            >
+              Cancelar
+            </Button>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
   );
 }
