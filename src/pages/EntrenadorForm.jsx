@@ -1,12 +1,26 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { TextField, Button, Card, CardContent, Typography } from "@mui/material";
-import { getEntrenadorById, updateEntrenador, createEntrenador } from "../services/trainerServices";
+import {
+  TextField,
+  Button,
+  Card,
+  CardContent,
+  Typography,
+} from "@mui/material";
+
+import {
+  getEntrenadorById,
+  updateEntrenador,
+  createEntrenador,
+} from "../services/trainerServices";
+
+import Loading from "../components/Loading";
 import "./EntrenadorForm.css";
 
 export default function EntrenadorForm() {
   const { id } = useParams();
   const navigate = useNavigate();
+
   const [trainerData, setTrainerData] = useState({
     name: "",
     age: "",
@@ -15,27 +29,35 @@ export default function EntrenadorForm() {
     picture: null,
   });
 
+  const [loading, setLoading] = useState(!!id); // solo carga si es edición
+
   useEffect(() => {
     if (id) {
-      getEntrenadorById(id)
-        .then((data) => {
+      async function fetchEntrenador() {
+        try {
+          const data = await getEntrenadorById(id);
           setTrainerData({
             name: data.name,
             age: data.age,
             city: data.city,
             specialty: data.specialty,
-            picture: null, // la imagen se carga aparte
+            picture: null, // imagen se maneja aparte
           });
-        })
-        .catch((error) => {
+        } catch (error) {
           console.error("Error cargando entrenador:", error);
           alert("Error cargando entrenador");
-        });
+        } finally {
+          setLoading(false);
+        }
+      }
+
+      fetchEntrenador();
     }
   }, [id]);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
+
     if (name === "picture") {
       setTrainerData({ ...trainerData, picture: files[0] });
     } else {
@@ -60,12 +82,18 @@ export default function EntrenadorForm() {
     }
   };
 
+  // 🔹 LOADING (MISMO PATRÓN GLOBAL)
+  if (loading) {
+    return <Loading text="Cargando entrenador..." />;
+  }
+
   return (
     <Card className="form-card">
       <CardContent>
         <Typography variant="h5" gutterBottom>
           {id ? "Editar Entrenador" : "Agregar Entrenador"}
         </Typography>
+
         <form onSubmit={handleSubmit} className="form-container">
           <TextField
             label="Nombre"
@@ -75,6 +103,7 @@ export default function EntrenadorForm() {
             fullWidth
             margin="normal"
           />
+
           <TextField
             label="Edad"
             name="age"
@@ -84,6 +113,7 @@ export default function EntrenadorForm() {
             fullWidth
             margin="normal"
           />
+
           <TextField
             label="Ciudad"
             name="city"
@@ -92,6 +122,7 @@ export default function EntrenadorForm() {
             fullWidth
             margin="normal"
           />
+
           <TextField
             label="Especialidad"
             name="specialty"
@@ -101,12 +132,18 @@ export default function EntrenadorForm() {
             margin="normal"
           />
 
-          <input type="file" name="picture" accept="image/*" onChange={handleChange} />
+          <input
+            type="file"
+            name="picture"
+            accept="image/*"
+            onChange={handleChange}
+          />
 
           <div className="form-actions">
             <Button type="submit" variant="contained" color="success">
               {id ? "Guardar cambios" : "Guardar"}
             </Button>
+
             <Button
               variant="contained"
               color="error"

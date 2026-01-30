@@ -5,18 +5,22 @@ import {
   Button,
   Card,
   CardContent,
-  Typography
+  Typography,
 } from "@mui/material";
+
 import {
   addPokemon,
   fetchPokemonById,
-  updatePokemon
+  updatePokemon,
 } from "../services/pokemonServices";
+
+import Loading from "../components/Loading"; // 👈 loading centrado
 import "./PokemonForm.css";
 
 export default function PokemonForm() {
   const navigate = useNavigate();
-  const { id } = useParams(); // ← detecta si estamos editando
+  const { id } = useParams();
+
   const [pokemonData, setPokemonData] = useState({
     name: "",
     type: "",
@@ -25,33 +29,47 @@ export default function PokemonForm() {
     picture: null,
   });
 
-  // Si hay id, cargamos el Pokémon existente
+  const [loading, setLoading] = useState(false);
+
+  // 🔹 Cargar Pokémon si es edición
   useEffect(() => {
-    if (id) {
-      fetchPokemonById(id)
-        .then((data) => {
+    let mounted = true;
+
+    async function loadPokemon() {
+      if (!id) return;
+
+      setLoading(true);
+      try {
+        const data = await fetchPokemonById(id);
+        if (mounted) {
           setPokemonData({
-            name: data.name,
-            type: data.type,
-            weight: data.weight,
-            height: data.height,
-            picture: null, // la imagen se carga aparte
+            name: data.name || "",
+            type: data.type || "",
+            weight: data.weight || "",
+            height: data.height || "",
+            picture: null,
           });
-        })
-        .catch((error) => {
-          console.error("Error cargando el Pokémon:", error);
-          alert("Error cargando el Pokémon");
-        });
+        }
+      } catch (error) {
+        console.error("Error cargando el Pokémon:", error);
+        alert("Error cargando el Pokémon");
+      } finally {
+        if (mounted) setLoading(false);
+      }
     }
+
+    loadPokemon();
+    return () => {
+      mounted = false;
+    };
   }, [id]);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    if (name === "picture") {
-      setPokemonData({ ...pokemonData, picture: files[0] });
-    } else {
-      setPokemonData({ ...pokemonData, [name]: value });
-    }
+    setPokemonData({
+      ...pokemonData,
+      [name]: name === "picture" ? files[0] : value,
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -71,12 +89,18 @@ export default function PokemonForm() {
     }
   };
 
+  // ✅ LOADING CENTRADO
+  if (loading) {
+    return <Loading text="Cargando Pokémon..." />;
+  }
+
   return (
     <Card className="form-card">
       <CardContent>
-        <Typography variant="h5" gutterBottom>
+        <Typography variant="h5" gutterBottom align="center">
           {id ? "Editar Pokémon" : "Agregar Pokémon"}
         </Typography>
+
         <form onSubmit={handleSubmit} className="form-container">
           <TextField
             label="Nombre"
@@ -85,7 +109,9 @@ export default function PokemonForm() {
             onChange={handleChange}
             fullWidth
             margin="normal"
+            required
           />
+
           <TextField
             label="Tipo"
             name="type"
@@ -93,7 +119,9 @@ export default function PokemonForm() {
             onChange={handleChange}
             fullWidth
             margin="normal"
+            required
           />
+
           <TextField
             label="Peso"
             name="weight"
@@ -102,6 +130,7 @@ export default function PokemonForm() {
             fullWidth
             margin="normal"
           />
+
           <TextField
             label="Altura"
             name="height"
@@ -111,7 +140,6 @@ export default function PokemonForm() {
             margin="normal"
           />
 
-          {/* 👇 Campo de archivo */}
           <input
             type="file"
             name="picture"

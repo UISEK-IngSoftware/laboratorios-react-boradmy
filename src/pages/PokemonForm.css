@@ -1,8 +1,6 @@
 .form-card {
   max-width: 500px;
-  margin: 20px auto;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  border-radius: 10px;
+  margin: 40px auto;
 }
 
 .form-container {
@@ -10,13 +8,12 @@
   flex-direction: column;
 }
 
-.form-actions {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin-top: 20px;
+.file-input {
+  margin-top: 16px;
 }
 
-.file-input {
-  margin-top: 15px;
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 24px;
 }

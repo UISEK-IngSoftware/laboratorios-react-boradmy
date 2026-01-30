@@ -12,12 +12,16 @@ import {
 } from "@mui/material";
 
 import { getEntrenadorById } from "../services/trainerServices";
+import Loading from "../components/Loading";
+
 import "./EntrenadorDetail.css";
 
 export default function EntrenadorDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+
   const [entrenador, setEntrenador] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const mediaUrl = import.meta.env.VITE_MEDIA_URL;
 
@@ -28,15 +32,30 @@ export default function EntrenadorDetail() {
         setEntrenador(data);
       } catch (error) {
         console.error(error);
+      } finally {
+        setLoading(false);
       }
     }
+
     fetchEntrenador();
   }, [id]);
 
-  if (!entrenador) return <Typography>Cargando...</Typography>;
+  // 🔹 LOADING GLOBAL (MISMO PATRÓN)
+  if (loading) {
+    return <Loading text="Cargando entrenador..." />;
+  }
+
+  // Seguridad extra por si no existe
+  if (!entrenador) {
+    return (
+      <Typography variant="body1" color="text.secondary">
+        Entrenador no encontrado.
+      </Typography>
+    );
+  }
 
   // ✅ MISMO PATRÓN QUE PokemonCard
-  const imageUrl = entrenador?.picture
+  const imageUrl = entrenador.picture
     ? `${mediaUrl}/${entrenador.picture}`
     : null;
 

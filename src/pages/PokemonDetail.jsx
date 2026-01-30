@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 
 import { fetchPokemonById } from "../services/pokemonServices";
+import Loading from "../components/Loading"; // 👈 IMPORTANTE
 import "./PokemonDetail.css";
 
 export default function PokemonDetail() {
@@ -44,12 +45,9 @@ export default function PokemonDetail() {
     };
   }, [id]);
 
+  // ✅ LOADING CENTRADO
   if (loading) {
-    return (
-      <Typography align="center" sx={{ mt: 4 }}>
-        Cargando...
-      </Typography>
-    );
+    return <Loading text="Cargando Pokémon..." />;
   }
 
   if (!pokemon) {
@@ -60,7 +58,7 @@ export default function PokemonDetail() {
     );
   }
 
-  // Construcción segura de la URL de imagen (evita //)
+  // Construcción segura de la URL de imagen
   let imageUrl = "";
   if (pokemon.picture) {
     const base = (mediaUrl || "").replace(/\/+$/, "");
@@ -78,16 +76,14 @@ export default function PokemonDetail() {
   return (
     <Card className="poke-detail-card">
       <CardContent>
-        {/* Título */}
         <Typography variant="h4" className="poke-name" gutterBottom>
           {pokemon.name || "Pokémon"}
         </Typography>
 
         <Divider className="poke-divider" />
 
-        {/* Layout principal: izquierda (foto) | derecha (datos) */}
         <Grid container spacing={3} className="poke-main-grid">
-          {/* Izquierda: Foto (rectángulo vertical) */}
+          {/* Imagen */}
           <Grid item xs={12} md={4}>
             <Box className="poke-left">
               <Avatar
@@ -99,7 +95,7 @@ export default function PokemonDetail() {
             </Box>
           </Grid>
 
-          {/* Derecha: Datos */}
+          {/* Información */}
           <Grid item xs={12} md={8}>
             <Box className="poke-info">
               {types.length > 0 && (
@@ -121,9 +117,12 @@ export default function PokemonDetail() {
           </Grid>
         </Grid>
 
-        {/* Botón Volver */}
         <div className="poke-actions">
-          <Button variant="contained" color="secondary" onClick={() => navigate(-1)}>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => navigate(-1)}
+          >
             Volver
           </Button>
         </div>
@@ -131,4 +130,3 @@ export default function PokemonDetail() {
     </Card>
   );
 }
-``
