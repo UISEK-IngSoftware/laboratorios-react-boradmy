@@ -2,6 +2,7 @@ import { Box, Typography, TextField, Button, CircularProgress } from "@mui/mater
 import { login } from "../services/authServices";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import "./LoginPage.css";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -42,52 +43,47 @@ export default function LoginPage() {
   };
 
   return (
-    <Box
-      component="form"
-      onSubmit={handleSubmit}
-      sx={{
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 4,
-      }}
-    >
-      <Typography variant="h5" gutterBottom>
-        Inicio de sesión
-      </Typography>
+    <div className="login-page">
+      <Box component="form" onSubmit={handleSubmit} className="login-box">
+        <Typography variant="h5" gutterBottom>
+          Inicio de sesión
+        </Typography>
 
-      <TextField
-        label="Usuario"
-        name="username"
-        variant="outlined"
-        value={loginData.username}
-        onChange={handleChange}
-        required
-        disabled={loading}
-      />
+        <TextField
+          label="Usuario"
+          name="username"
+          value={loginData.username}
+          onChange={handleChange}
+          required
+          disabled={loading}
+          fullWidth
+        />
 
-      <TextField
-        label="Contraseña"
-        name="password"
-        type="password"
-        variant="outlined"
-        value={loginData.password}
-        onChange={handleChange}
-        required
-        disabled={loading}
-      />
+        <TextField
+          label="Contraseña"
+          name="password"
+          type="password"
+          value={loginData.password}
+          onChange={handleChange}
+          required
+          disabled={loading}
+          fullWidth
+        />
 
-      <Button
-        type="submit"
-        variant="contained"
-        color="primary"
-        disabled={loading}
-        sx={{ minWidth: 180 }}
-      >
-        {loading ? <CircularProgress size={24} color="inherit" /> : "Iniciar sesión"}
-      </Button>
-    </Box>
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          disabled={loading}
+          className="login-button"
+        >
+          {loading ? (
+            <CircularProgress size={24} color="inherit" />
+          ) : (
+            "Iniciar sesión"
+          )}
+        </Button>
+      </Box>
+    </div>
   );
 }
